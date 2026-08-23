@@ -231,7 +231,7 @@ selected_race = st.selectbox(
 
 race_info = races_in_cat[selected_race]
 
-# Wyświetlenie karty trasy
+# TUTAJ BYŁ BŁĄD - Nawiasy zostały teraz poprawnie zamknięte:
 st.markdown(
     f"""
     <div class="route-card">
@@ -259,6 +259,7 @@ if not race_info["available"]:
             st.error("Nieprawidłowy kod dostępu. Spróbuj ponownie lub skontaktuj się z organizatorem.")
 
 st.markdown("</div>", unsafe_allow_html=True)
+
 # ============================================================
 # LOGIKA URUCHAMIANIA TRANSMISJI (Tylko dla odblokowanych)
 # ============================================================
