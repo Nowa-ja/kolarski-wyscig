@@ -340,9 +340,10 @@ if race_info["available"]:
             label_visibility="collapsed"
         )
         
-        if st.button("🔊 GENERUJ I ODTWÓRZ WŁASNY TEKST", type="primary", use_container_width=True):
-            if tekst_komunikatu.strip():
-                with st.spinner("🔊 Przygotowywanie Twojego audio..."):
+if st.button("🔊 GENERUJ I ODTWÓRZ WŁASNY TEKST", type="primary", use_container_width=True):
+    if tekst_komunikatu.strip():
+        with st.spinner("🚴‍♂️ Trwa przygotowywanie Twojego wyścigu. Zapnij kask i łap za kierownicę – zaraz idzie ogień z korby! Bylebyś tylko nie wypadł z trasy! 🔥"):
+
                     try:
                         st.session_state.custom_audio = generate_audio(tekst_komunikatu.strip())
                         st.session_state.commentary = tekst_komunikatu.strip()
