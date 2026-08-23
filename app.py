@@ -270,62 +270,96 @@ if not race_info["available"]:
 
 st.markdown("</div>", unsafe_allow_html=True)
 # ============================================================
-# LOGIKA URUCHAMIANIA TRANSMISJI (Tylko dla odblokowanych)
+# LOGIKA URUCHAMIANIA TRANSMISJI (Rozróżnienie na szablon i tekst live)
 # ============================================================
 if race_info["available"]:
 
-    # PERSONALIZACJA
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">Twój zawodnik</div>', unsafe_allow_html=True)
-
-    user_name = st.text_input(
-        "Imię i nazwisko",
-        value="Anonimowy Kolarz",
-        max_chars=60,
-        placeholder="np. Jan Kowalski",
-        label_visibility="collapsed",
-    )
-    st.caption("Komentator będzie używał tego imienia podczas relacji.")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # PRZYCISK START WYŚCIGU
-    if st.button("🔥 START WYŚCIGU", type="primary", use_container_width=True):
-        clean_name = user_name.strip()
-        if not clean_name:
-            clean_name = "Anonimowy Kolarz"
-
-        with st.spinner("🎙️ Dynamiczny komentator przygotowuje relację..."):
-            personalized_text = generate_commentary(clean_name)
-            try:
-                # Uruchomienie nowego, podkręconego silnika Edge-TTS
-                audio = generate_audio(personalized_text)
-                st.session_state.commentary = personalized_text
-                st.session_state.audio = audio
-                st.session_state.started = True
-            except Exception as error:
-                st.session_state.commentary = personalized_text
-                st.session_state.audio = None
-                st.session_state.started = True
-                st.warning("Nie udało się wygenerować nagrania audio przez Edge-TTS. Sprawdź połączenie z internetem.")
-
-    # EKRAN AKTYWNEJ RELACJI LIVE
-    if st.session_state.started and st.session_state.commentary:
-        st.markdown('<div class="status">🔴 TRANSMISJA AUDIO LIVE • EMOCJE DO KOŃCA!</div>', unsafe_allow_html=True)
+    # TRYB A: Wyścig darmowy / fabryczny (Używa gotowego szablonu COMMENTARY_TEMPLATE)
+    if not race_info.get("is_custom", False) and selected_race == "🚴 Wielka Pętla Małopolski":
+        
+        # PERSONALIZACJA
         st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">🎙️ Relacja dynamicznego komentatora</div>', unsafe_allow_html=True)
-        
-        safe_commentary = html.escape(st.session_state.commentary).replace("\n", "<br>")
-        st.markdown(f'<div class="commentary">{safe_commentary}</div>', unsafe_allow_html=True)
-        
-        # Odtwarzacz HTML5 z nowym, szybkim głosem Marka (+25% tempa)
-        if st.session_state.audio:
-            audio_player(st.session_state.audio)
+        st.markdown('<div class="section-title">Twój zawodnik</div>', unsafe_allow_html=True)
 
+        user_name = st.text_input(
+            "Imię i nazwisko",
+            value="Anonimowy Kolarz",
+            max_chars=60,
+            placeholder="np. Jan Kowalski",
+            label_visibility="collapsed",
+        )
+        st.caption("Komentator będzie używał tego imienia podczas relacji.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # Sekcja diagnostyczna MVP
-        with st.expander("📜 Pokaż pełny tekst relacji"):
-            st.write(st.session_state.commentary)
+        # PRZYCISK START WYŚCIGU
+        if st.button("🔥 START WYŚCIGU", type="primary", use_container_width=True):
+            clean_name = user_name.strip()
+            if not clean_name:
+                clean_name = "Anonimowy Kolarz"
+
+            with st.spinner("🎙️ Dynamiczny komentator przygotowuje relację..."):
+                personalized_text = generate_commentary(clean_name)
+                try:
+                    audio = generate_audio(personalized_text)
+                    st.session_state.commentary = personalized_text
+                    st.session_state.audio = audio
+                    st.session_state.started = True
+                except Exception as error:
+                    st.session_state.commentary = personalized_text
+                    st.session_state.audio = None
+                    st.session_state.started = True
+                    st.warning("Błąd generowania audio przez Edge-TTS.")
+
+        # EKRAN AKTYWNEJ RELACJI DLA SZABLONU
+        if st.session_state.started and st.session_state.commentary:
+            st.markdown('<div class="status">🔴 TRANSMISJA AUDIO LIVE • EMOCJE DO KOŃCA!</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.markdown('<div class="section-title">🎙️ Relacja dynamicznego komentatora</div>', unsafe_allow_html=True)
+            
+            safe_commentary = html.escape(st.session_state.commentary).replace("\n", "<br>")
+            st.markdown(f'<div class="commentary">{safe_commentary}</div>', unsafe_allow_html=True)
+            
+            if st.session_state.audio:
+                audio_player(st.session_state.audio)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            with st.expander("📜 Pokaż pełny tekst relacji"):
+                st.write(st.session_state.commentary)
+
+    # TRYB B: Trasy Premium / Własne (Uruchamia Twoje upragnione pole tekstowe na własny tekst!)
+    else:
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">🎙️ MIKROFON KOMENTATORA LIVE</div>', unsafe_allow_html=True)
+        st.write("Wklej tutaj swój autorski, płynnie napisany tekst relacji:")
+        
+        # Twoje okno na dowolną relację!
+        tekst_komunikatu = st.text_area(
+            "Tekst na antenę:", 
+            height=150, 
+            placeholder="Wklej tutaj swój tekst jednym ciągiem bez sztucznych enterów, aby posłuchać różnicy...",
+            label_visibility="collapsed"
+        )
+        
+        if st.button("🔊 GENERUJ I ODTWÓRZ WŁASNY TEKST", type="primary", use_container_width=True):
+            if tekst_komunikatu.strip():
+                with st.spinner("🔊 Przygotowywanie Twojego audio..."):
+                    try:
+                        st.session_state.custom_audio = generate_audio(tekst_komunikatu.strip())
+                        st.session_state.commentary = tekst_komunikatu.strip()
+                    except:
+                        st.session_state.custom_audio = None
+                        st.st.error("Błąd sieci Edge-TTS przy generowaniu audio.")
+            else:
+                st.error("Wpisz lub wklej najpierw jakiś tekst!")
+
+        if st.session_state.custom_audio:
+            st.markdown('<div class="status">🔊 TRANSMISJA TWOJEGO TEKSTU LIVE</div>', unsafe_allow_html=True)
+            audio_player(st.session_state.custom_audio)
+            
+            safe_custom_text = html.escape(st.session_state.commentary).replace("\n", "<br>")
+            st.markdown(f'<div class="commentary">{safe_custom_text}</div>', unsafe_allow_html=True)
+
+        st.markdown("</div>", unsafe_allow_html=True)
 
 else:
     # Blokada przycisku startu dla zablokowanych etapów Premium
@@ -344,7 +378,7 @@ st.markdown(
         1. Załóż słuchawki.<br>
         2. Wybierz kategorię wyścigów (np. Górskie) oraz konkretny etap.<br>
         3. Odblokuj trasę Premium kodem dostępu lub wybierz etap darmowy.<br>
-        4. Wpisz swoje imię i naciśnij <b>START WYŚCIGU</b>.<br>
+        4. Wpisz swoje imię i naciśnij <b>START WYŚCIGU</b> lub wklej własny tekst.<br>
         5. Uruchom relację głosową i wyciśnij z siebie siódme poty!
     </p>
     """,
@@ -366,3 +400,4 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
