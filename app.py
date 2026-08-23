@@ -16,162 +16,36 @@ st.set_page_config(
 )
 
 # ============================================================
-# STYL UI (Zachowany w 100% z Twojego kodu)
+# STYL UI (Zachowany Twój styl + poprawki dla kategorii)
 # ============================================================
 
 st.markdown(
     """
     <style>
-        /* Główne tło */
         .stApp {
-            background:
-                radial-gradient(
-                    circle at 50% -10%,
-                    rgba(255, 107, 53, 0.18),
-                    transparent 35%
-                ),
-                #090b0f;
+            background: radial-gradient(circle at 50% -10%, rgba(255, 107, 53, 0.18), transparent 35% ), #090b0f;
             color: #f5f7fa;
         }
-
-        /* Ograniczenie szerokości głównej zawartości */
-        .block-container {
-            max-width: 760px;
-            padding-top: 2rem;
-            padding-bottom: 3rem;
-        }
-
-        /* Nagłówek */
-        .hero {
-            text-align: center;
-            padding: 1rem 0 1.5rem 0;
-        }
-
-        .hero-icon {
-            font-size: 4rem;
-            line-height: 1;
-            margin-bottom: 0.7rem;
-        }
-
-        .hero h1 {
-            font-size: clamp(2rem, 8vw, 3.5rem);
-            font-weight: 800;
-            letter-spacing: -0.04em;
-            margin: 0;
-            color: #ffffff;
-        }
-
-        .hero p {
-            color: #9da5b4;
-            font-size: 1rem;
-            margin-top: 0.7rem;
-        }
-
-        /* Karty */
-        .card {
-            background: rgba(22, 25, 32, 0.92);
-            border: 1px solid #292e38;
-            border-radius: 20px;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
-        }
-
-        .section-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #8f98a8;
-            margin-bottom: 0.8rem;
-        }
-
-        /* Informacja o trasie */
-        .route-card {
-            background: linear-gradient(
-                135deg,
-                rgba(255, 107, 53, 0.15),
-                rgba(22, 25, 32, 0.95)
-            );
-            border: 1px solid rgba(255, 107, 53, 0.35);
-            border-radius: 20px;
-            padding: 1.2rem;
-            margin: 1rem 0;
-        }
-
-        .route-name {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .route-meta {
-            color: #aab1bd;
-            margin-top: 0.35rem;
-            font-size: 0.9rem;
-        }
-
-        /* Komentarz */
-        .commentary {
-            background: #101319;
-            border-left: 4px solid #ff6b35;
-            border-radius: 12px;
-            padding: 1rem 1.1rem;
-            line-height: 1.7;
-            color: #e8ebef;
-            max-height: 360px;
-            overflow-y: auto;
-        }
-
-        /* Status */
-        .status {
-            text-align: center;
-            padding: 0.7rem;
-            border-radius: 12px;
-            background: rgba(255, 107, 53, 0.08);
-            color: #ff9a76;
-            margin: 1rem 0;
-        }
-
-        /* Stopka */
-        .footer {
-            text-align: center;
-            color: #626a78;
-            font-size: 0.78rem;
-            margin-top: 2rem;
-        }
-
-        /* Przyciski */
-        div.stButton > button {
-            width: 100%;
-            border-radius: 14px;
-            min-height: 3.2rem;
-            font-weight: 800;
-            font-size: 1rem;
-        }
-
-        /* Na telefonach */
+        .block-container { max-width: 760px; padding-top: 2rem; padding-bottom: 3rem; }
+        .hero { text-align: center; padding: 1rem 0 1.5rem 0; }
+        .hero-icon { font-size: 4rem; line-height: 1; margin-bottom: 0.7rem; }
+        .hero h1 { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 800; letter-spacing: -0.04em; margin: 0; color: #ffffff; }
+        .hero p { color: #9da5b4; font-size: 1rem; margin-top: 0.7rem; }
+        .card { background: rgba(22, 25, 32, 0.92); border: 1px solid #292e38; border-radius: 20px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25); }
+        .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #8f98a8; margin-bottom: 0.8rem; }
+        .route-card { background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(22, 25, 32, 0.95)); border: 1px solid rgba(255, 107, 53, 0.35); border-radius: 20px; padding: 1.2rem; margin: 1rem 0; }
+        .route-name { font-size: 1.35rem; font-weight: 800; color: #ffffff; }
+        .route-meta { color: #aab1bd; margin-top: 0.35rem; font-size: 0.9rem; }
+        .commentary { background: #101319; border-left: 4px solid #ff6b35; border-radius: 12px; padding: 1rem 1.1rem; line-height: 1.7; color: #e8ebef; max-height: 360px; overflow-y: auto; }
+        .status { text-align: center; padding: 0.7rem; border-radius: 12px; background: rgba(255, 107, 53, 0.08); color: #ff9a76; margin: 1rem 0; }
+        .footer { text-align: center; color: #626a78; font-size: 0.78rem; margin-top: 2rem; }
+        div.stButton > button { width: 100%; border-radius: 14px; min-height: 3.2rem; font-weight: 800; font-size: 1rem; }
         @media (max-width: 600px) {
-            .block-container {
-                padding: 1rem 0.8rem 2rem 0.8rem;
-            }
-
-            .card {
-                border-radius: 16px;
-                padding: 1rem;
-            }
-
-            .hero {
-                padding-top: 0.5rem;
-            }
-
-            .hero-icon {
-                font-size: 3rem;
-            }
-
-            .commentary {
-                font-size: 0.95rem;
-            }
+            .block-container { padding: 1rem 0.8rem 2rem 0.8rem; }
+            .card { border-radius: 16px; padding: 1rem; }
+            .hero { padding-top: 0.5rem; }
+            .hero-icon { font-size: 3rem; }
+            .commentary { font-size: 0.95rem; }
         }
     </style>
     """,
@@ -179,50 +53,45 @@ st.markdown(
 )
 
 # ============================================================
-# INITIALIZATION / SESSION STATE
-# Dynamiczna baza wyścigów zintegrowana z Twoim słownikiem RACES
+# NOWA STRUKTURA BAZY WYŚCIGÓW (Z podziałem na Twoje kategorie!)
 # ============================================================
 
 if "dynamic_races" not in st.session_state:
     st.session_state.dynamic_races = {
-        "🚴 Wielka Pętla Małopolski": {
-            "available": True,
-            "description": "Etap lokalny • Darmowy",
-            "distance": "42 km",
-            "terrain": "Góry + szosa",
-            "is_custom": False,
-            "kolarze": [],
-            "relacja_live": []
+        "🏙️ Wyścigi Wojewódzkie": {
+            "🚴 Wielka Pętla Małopolski": {
+                "available": True, "description": "Etap lokalny • Darmowy", "distance": "42 km", "terrain": "Szosa • Lekkie pagórki",
+                "is_custom": False, "kolarze": [], "relacja_live": [], "password": ""
+            },
+            "🔒 Śląski Klasyk Miejski": {
+                "available": False, "description": "Premium • Wymaga kodu", "distance": "55 km", "terrain": "Kostka • Szybkie kryterium",
+                "is_custom": False, "kolarze": [], "relacja_live": [], "password": "SLASK"
+            }
         },
-        "🔒 Wielki Wyścig Narodowy": {
-            "available": False,
-            "description": "Premium • Wkrótce",
-            "distance": "—",
-            "terrain": "—",
-            "is_custom": False,
-            "kolarze": [],
-            "relacja_live": []
+        "🏔️ Wyścigi Górskie (Krew i Łzy)": {
+            "🔒 Sekretny Tunel Miejski": {
+                "available": False, "description": "Premium • Wyciskacz potu", "distance": "12 km", "terrain": "Tunel • Ściana płaczu (15%)",
+                "is_custom": False, "kolarze": [], "relacja_live": [], "password": "TUNEL"
+            },
+            "🔒 Tatrzański Piekielny Podjazd": {
+                "available": False, "description": "Premium • Hardkorowy trening", "distance": "28 km", "terrain": "Mordercze góry",
+                "is_custom": False, "kolarze": [], "relacja_live": [], "password": "TATRY"
+            }
         },
-        "🔒 Sekretny Tunel Miejski": {
-            "available": False,
-            "description": "Premium • Wkrótce",
-            "distance": "—",
-            "terrain": "—",
-            "is_custom": False,
-            "kolarze": [],
-            "relacja_live": []
-        },
+        "🦅 Wyścigi Ogólnopolskie / Zagraniczne": {
+            "🔒 Wielki Wyścig Narodowy": {
+                "available": False, "description": "Premium • Królewski etap", "distance": "180 km", "terrain": "Pełny przekrój",
+                "is_custom": False, "kolarze": [], "relacja_live": [], "password": "POLSKA"
+            }
+        }
     }
 
 if "started" not in st.session_state:
     st.session_state.started = False
-
 if "commentary" not in st.session_state:
     st.session_state.commentary = ""
-
 if "audio" not in st.session_state:
     st.session_state.audio = None
-
 if "custom_audio" not in st.session_state:
     st.session_state.custom_audio = None
 # ============================================================
@@ -230,7 +99,7 @@ if "custom_audio" not in st.session_state:
 # ============================================================
 
 COMMENTARY_TEMPLATE = """
-Witamy na trasie Wielkiej Pętli Małopolski!
+Witamy na trasie wyścigu!
 
 Pogoda jest upiorna, wieje silny wiatr, a przed nami wymagający etap!
 
@@ -289,7 +158,7 @@ Dziesięć!
 
 I JEST!!!
 
-{USER_NAME} wygrywa etap Wielkiej Pętli Małopolski!
+{USER_NAME} wygrywa ten etap!
 
 Co za debiut!
 
@@ -333,7 +202,7 @@ st.markdown(
     <div class="hero">
         <div class="hero-icon">🚴</div>
         <h1>PELOTON LIVE</h1>
-        <p>Poczuj się jak zawodowiec.</p>
+        <p>Wyciśnij z siebie pot, krew i łzy.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -341,77 +210,59 @@ st.markdown(
 
 
 # ============================================================
-# KREATOR NOWYCH WYŚCIGÓW
+# NOWY PANEL WYBORU (KATEGORIA -> ETAP)
 # ============================================================
 
 st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">➕ Stwórz nowy wyścig komentatorski</div>', unsafe_allow_html=True)
-with st.expander("Kliknij tutaj, aby dodać nowy radiowy wyścig"):
-    nazwa_nowego = st.text_input("Nazwa wyścigu:", placeholder="np. Wyścig Dookoła Tatr")
-    dystans_nowego = st.text_input("Dystans etapu:", placeholder="np. 85 km")
-    teren_nowego = st.text_input("Ukształtowanie terenu:", placeholder="np. Ciężkie podjazdy, szosa")
-    
-    if st.button("Zapisz i utwórz wyścig"):
-        if nazwa_nowego.strip():
-            klucz = f"🚴 {nazwa_nowego}"
-            st.session_state.dynamic_races[klucz] = {
-                "available": True,
-                "description": "Transmisja radiowa live • Własny wyścig",
-                "distance": dystans_nowego if dystans_nowego else "—",
-                "terrain": teren_nowego if teren_nowego else "—",
-                "is_custom": True,
-                "kolarze": [],
-                "relacja_live": []
-            }
-            st.success(f"Dodano wyścig: {klucz}!")
-            st.rerun()
-        else:
-            st.error("Wpisz nazwę wyścigu!")
-st.markdown("</div>", unsafe_allow_html=True)
-# ============================================================
-# WYBÓR WYŚCIGU
-# ============================================================
+st.markdown('<div class="section-title">Wybierz kategorię i etap wyścigu</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown('<div class="section-title">Wybierz etap</div>', unsafe_allow_html=True)
-
-selected_race = st.selectbox(
-    "Etap",
+# 1. Wybór kategorii wyścigu
+selected_category = st.selectbox(
+    "Kategoria",
     options=list(st.session_state.dynamic_races.keys()),
-    label_visibility="collapsed",
 )
 
-race_info = st.session_state.dynamic_races[selected_race]
+# 2. Wybór etapu z wybranej kategorii
+races_in_cat = st.session_state.dynamic_races[selected_category]
+selected_race = st.selectbox(
+    "Etap",
+    options=list(races_in_cat.keys()),
+)
 
-if race_info["available"]:
-    st.markdown(
-        f"""
-        <div class="route-card">
-            <div class="route-name">{html.escape(selected_race)}</div>
-            <div class="route-meta">
-                {race_info["description"]}
-                &nbsp; • &nbsp;
-                {race_info["distance"]}
-                &nbsp; • &nbsp;
-                {race_info["terrain"]}
-            </div>
+race_info = races_in_cat[selected_race]
+
+# Wyświetlenie karty trasy
+st.markdown(
+    f"""
+    <div class="route-card">
+        <div class="route-name">{html.escape(selected_race)}</div>
+        <div class="route-meta">
+            {race_info["description"]}<br>
+            Dystans: <b>{race_info["distance"]}</b> &nbsp;•&nbsp; Teren: <b>{race_info["terrain"]}</b>
         </div>
-        """,
-        unsafe_allow_html=True,
-    )
-else:
-    st.info(
-        "🔒 Ten etap jest obecnie zablokowany. "
-        "Zostanie udostępniony w jednej z przyszłych aktualizacji."
-    )
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# SYSTEM ODBLOKOWYWANIA HASŁEM (PAYWALL MVP)
+if not race_info["available"]:
+    st.markdown("<p style='color:#ff9a76; font-size:0.9rem;'>🔒 <b>Ten etap wymaga licencji Premium.</b><br>Wyślij 5 zł BLIK na numer telefonu organizatora, aby otrzymać kod dostępu.</p>", unsafe_allow_html=True)
+    kod_wpisany = st.text_input("Wpisz kod dostępu, aby odblokować trasę:", type="password", placeholder="Wpisz kod tutaj...")
+    
+    if st.button("🔓 Sprawdź i odblokuj kod"):
+        if kod_wpisany.strip() == race_info["password"]:
+            race_info["available"] = True
+            st.success("🎉 Kod poprawny! Trasa została trwale odblokowana w tej sesji!")
+            st.rerun()
+        else:
+            st.error("Nieprawidłowy kod dostępu. Spróbuj ponownie lub skontaktuj się z organizatorem.")
 
 st.markdown("</div>", unsafe_allow_html=True)
-
-
 # ============================================================
-# TRYB 1: FABRYCZNY (Z Twoją pełną logiką zakończenia)
+# LOGIKA URUCHAMIANIA TRANSMISJI (Tylko dla odblokowanych)
 # ============================================================
-if race_info["available"] and not race_info["is_custom"]:
+if race_info["available"]:
 
     # PERSONALIZACJA
     st.markdown('<div class="card">', unsafe_allow_html=True)
@@ -427,13 +278,14 @@ if race_info["available"] and not race_info["is_custom"]:
     st.caption("Komentator będzie używał tego imienia podczas relacji.")
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # PRZYCISK START
+    # PRZYCISK START WYŚCIGU
     if st.button("🔥 START WYŚCIGU", type="primary", use_container_width=True):
         clean_name = user_name.strip()
         if not clean_name:
             clean_name = "Anonimowy Kolarz"
 
         with st.spinner("🎙️ Komentator przygotowuje relację..."):
+            # Generowanie komentarza dostosowanego pod zawodnika
             personalized_text = generate_commentary(clean_name)
             try:
                 audio = generate_audio(personalized_text)
@@ -446,8 +298,8 @@ if race_info["available"] and not race_info["is_custom"]:
                 st.session_state.started = True
                 st.warning("Nie udało się wygenerować nagrania audio. Sprawdź połączenie z internetem.")
 
-    # EKRAN TRANSMISJI FABRYCZNEJ
-    if st.session_state.started:
+    # EKRAN AKTYWNEJ RELACJI LIVE
+    if st.session_state.started and st.session_state.commentary:
         st.markdown('<div class="status">🔴 RELACJA LIVE • JEDZIEMY!</div>', unsafe_allow_html=True)
         st.markdown('<div class="card">', unsafe_allow_html=True)
         st.markdown('<div class="section-title">🎙️ Relacja komentatora</div>', unsafe_allow_html=True)
@@ -455,64 +307,19 @@ if race_info["available"] and not race_info["is_custom"]:
         safe_commentary = html.escape(st.session_state.commentary).replace("\n", "<br>")
         st.markdown(f'<div class="commentary">{safe_commentary}</div>', unsafe_allow_html=True)
         
-        # Twój player HTML5 z natywnym Play/Pause
+        # Odtwarzacz HTML5 z przyciskami Play/Pause
         if st.session_state.audio:
             audio_player(st.session_state.audio)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # Przydatne podczas testowania MVP.
+        # Sekcja diagnostyczna MVP
         with st.expander("📜 Pokaż pełny tekst relacji"):
             st.write(st.session_state.commentary)
-# ============================================================
-# TRYB 2: WŁASNY WYŚCIG (Dynamiczne Studio Komentatorskie Live)
-# ============================================================
-elif race_info["available"] and race_info["is_custom"]:
 
-    # Panel dodawania nowych kolarzy
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">👥 Uczestnicy wyścigu i nowe twarze</div>', unsafe_allow_html=True)
-    c_k1, c_k2 = st.columns()
-    with c_k1:
-        nowy_zawodnik = st.text_input("Dodaj nowego, nieznanego zawodnika:", placeholder="np. Marian Kowal (Team Custom)", label_visibility="collapsed")
-    with c_k2:
-        if st.button("➕ Dodaj", use_container_width=True):
-            if nowy_zawodnik.strip() and nowy_zawodnik not in race_info["kolarze"]:
-                race_info["kolarze"].append(nowy_zawodnik.strip())
-                st.rerun()
-                
-    if race_info["kolarze"]:
-        st.caption("**Lista nowych zawodników w tym wyścigu:** " + ", ".join(race_info["kolarze"]))
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    # Panel Mikrofonu Komentatora
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">🎙️ MIKROFON KOMENTATORA LIVE</div>', unsafe_allow_html=True)
-    
-    tekst_komunikatu = st.text_area("Wpisz na bieżąco tekst relacji radiowej:", height=100, placeholder="np. Niewiarygodny moment! Nowy zawodnik ucieka z grupy...")
-    
-    if st.button("🔊 WYŚLIJ KOMUNIKAT NA ANTENĘ", type="primary", use_container_width=True):
-        if tekst_komunikatu.strip():
-            race_info["relacja_live"].insert(0, tekst_komunikatu.strip())
-            try:
-                st.session_state.custom_audio = generate_audio(tekst_komunikatu.strip())
-            except:
-                st.session_state.custom_audio = None
-                st.warning("Błąd sieci gTTS przy generowaniu audio.")
-            st.rerun()
-
-    if st.session_state.custom_audio:
-        st.markdown('**Ostatnie nagranie audio:**')
-        audio_player(st.session_state.custom_audio)
-
-    # Kronika wydarzeń
-    st.markdown('<div class="section-title" style="margin-top: 1.5rem;">📜 KRONIKA WYDARZEŃ (Od najnowszych)</div>', unsafe_allow_html=True)
-    if race_info["relacja_live"]:
-        historia_html = "<br><br>".join([f"• {html.escape(wpis)}" for wpis in race_info["relacja_live"]])
-        st.markdown(f'<div class="commentary">{historia_html}</div>', unsafe_allow_html=True)
-    else:
-        st.caption("Cisza w eterze. Napisz swój pierwszy komunikat wyżej!")
-    st.markdown("</div>", unsafe_allow_html=True)
+else:
+    # Blokada przycisku startu, gdy użytkownik nie wpisał poprawnego hasła BLIK
+    st.button("🔒 ETAP ZABLOKOWANY (WYMAGANA LICENCJA)", disabled=True, use_container_width=True)
 
 
 # ============================================================
@@ -525,10 +332,10 @@ st.markdown(
     <div class="section-title">🎧 Jak korzystać?</div>
     <p style="color:#aab1bd; line-height:1.7;">
         1. Załóż słuchawki.<br>
-        2. Wpisz swoje imię i nazwisko (lub twórz własne wyścigi).<br>
-        3. Wybierz dostępny etap.<br>
-        4. Naciśnij <b>START WYŚCIGU</b> ut nadawaj komunikaty live.<br>
-        5. Uruchom relację i ruszaj!
+        2. Wybierz kategorię wyścigów (np. Górskie) oraz konkretny etap.<br>
+        3. Odblokuj trasę Premium kodem dostępu lub wybierz etap darmowy.<br>
+        4. Wpisz swoje imię i naciśnij <b>START WYŚCIGU</b>.<br>
+        5. Uruchom relację głosową i wyciśnij z siebie siódme poty!
     </p>
     """,
     unsafe_allow_html=True,
@@ -537,14 +344,14 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ============================================================
-# STOPKA (Twoja autorska stopka MVP)
+# STOPKA
 # ============================================================
 
 st.markdown(
     """
     <div class="footer">
-        PELOTON LIVE • MVP<br>
-        Fikcyjny wyścig sportowy • Projekt demonstracyjny
+        PELOTON LIVE • PREMIUM MVP<br>
+        Fikcyjny wyścig sportowy • Projekt demonstracyjny komercyjny
     </div>
     """,
     unsafe_allow_html=True,
