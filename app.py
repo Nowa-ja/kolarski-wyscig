@@ -1,11 +1,8 @@
-```python
 import base64
 import io
 import html
-
 import streamlit as st
 from gtts import gTTS
-
 
 # ============================================================
 # KONFIGURACJA APLIKACJI
@@ -18,11 +15,8 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-
 # ============================================================
-# STYL UI
-# CSS jest responsywny i został przygotowany przede wszystkim
-# z myślą o ekranach smartfonów.
+# STYL UI (Zachowany w 100% z Twojego kodu)
 # ============================================================
 
 st.markdown(
@@ -184,40 +178,55 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
 # ============================================================
-# DANE WYŚCIGÓW
+# INITIALIZATION / SESSION STATE
+# Dynamiczna baza wyścigów zintegrowana z Twoim słownikiem RACES
 # ============================================================
 
-RACES = {
-    "🚴 Wielka Pętla Małopolski": {
-        "available": True,
-        "description": "Etap lokalny • Darmowy",
-        "distance": "42 km",
-        "terrain": "Góry + szosa",
-    },
-    "🔒 Wielki Wyścig Narodowy": {
-        "available": False,
-        "description": "Premium • Wkrótce",
-        "distance": "—",
-        "terrain": "—",
-    },
-    "🔒 Sekretny Tunel Miejski": {
-        "available": False,
-        "description": "Premium • Wkrótce",
-        "distance": "—",
-        "terrain": "—",
-    },
-}
+if "dynamic_races" not in st.session_state:
+    st.session_state.dynamic_races = {
+        "🚴 Wielka Pętla Małopolski": {
+            "available": True,
+            "description": "Etap lokalny • Darmowy",
+            "distance": "42 km",
+            "terrain": "Góry + szosa",
+            "is_custom": False,
+            "kolarze": [],
+            "relacja_live": []
+        },
+        "🔒 Wielki Wyścig Narodowy": {
+            "available": False,
+            "description": "Premium • Wkrótce",
+            "distance": "—",
+            "terrain": "—",
+            "is_custom": False,
+            "kolarze": [],
+            "relacja_live": []
+        },
+        "🔒 Sekretny Tunel Miejski": {
+            "available": False,
+            "description": "Premium • Wkrótce",
+            "distance": "—",
+            "terrain": "—",
+            "is_custom": False,
+            "kolarze": [],
+            "relacja_live": []
+        },
+    }
 
+if "started" not in st.session_state:
+    st.session_state.started = False
 
+if "commentary" not in st.session_state:
+    st.session_state.commentary = ""
+
+if "audio" not in st.session_state:
+    st.session_state.audio = None
+
+if "custom_audio" not in st.session_state:
+    st.session_state.custom_audio = None
 # ============================================================
-# KOMENTARZ WYŚCIGU
-#
-# {USER_NAME} jest dynamicznym placeholderem.
-# Po kliknięciu START zostanie zastąpiony imieniem użytkownika.
-#
-# Tekst wykorzystuje fikcyjne nazwy zgodnie z założeniami MVP.
+# KOMENTARZ WYŚCIGU (Twój oryginalny szablon)
 # ============================================================
 
 COMMENTARY_TEMPLATE = """
@@ -289,80 +298,30 @@ Co za emocje!
 Cała Polska wstrzymała oddech!
 """
 
-
 # ============================================================
 # FUNKCJE
 # ============================================================
 
 def generate_commentary(user_name: str) -> str:
-    """Podstawia nazwę użytkownika w przygotowanym scenariuszu."""
     return COMMENTARY_TEMPLATE.replace("{USER_NAME}", user_name)
-
 
 @st.cache_data(show_spinner=False)
 def generate_audio(text: str) -> bytes:
-    """
-    Generuje MP3 przez Google Text-to-Speech.
-
-    Funkcja jest cache'owana, dzięki czemu ponowne odtworzenie
-    tego samego komentarza nie wymaga ponownego generowania audio.
-    """
     audio_buffer = io.BytesIO()
-
-    tts = gTTS(
-        text=text,
-        lang="pl",
-        slow=False,
-    )
-
+    tts = gTTS(text=text, lang="pl", slow=False)
     tts.write_to_fp(audio_buffer)
     audio_buffer.seek(0)
-
     return audio_buffer.read()
 
-
 def audio_player(audio_bytes: bytes):
-    """
-    Osadza natywny HTML5 audio player.
-
-    Dzięki temu użytkownik telefonu otrzymuje standardowy
-    przycisk Play/Pause i może słuchać komentarza przez słuchawki.
-    """
     audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
-
     player = f"""
-        <audio
-            controls
-            preload="metadata"
-            style="
-                width: 100%;
-                margin-top: 10px;
-                border-radius: 12px;
-            "
-        >
-            <source
-                src="data:audio/mpeg;base64,{audio_base64}"
-                type="audio/mpeg"
-            >
+        <audio controls preload="metadata" style="width: 100%; margin-top: 10px; border-radius: 12px;">
+            <source src="data:audio/mpeg;base64,{audio_base64}" type="audio/mpeg">
             Twoja przeglądarka nie obsługuje elementu audio.
         </audio>
     """
-
     st.markdown(player, unsafe_allow_html=True)
-
-
-# ============================================================
-# SESSION STATE
-# ============================================================
-
-if "started" not in st.session_state:
-    st.session_state.started = False
-
-if "commentary" not in st.session_state:
-    st.session_state.commentary = ""
-
-if "audio" not in st.session_state:
-    st.session_state.audio = None
 
 
 # ============================================================
@@ -382,23 +341,47 @@ st.markdown(
 
 
 # ============================================================
+# KREATOR NOWYCH WYŚCIGÓW
+# ============================================================
+
+st.markdown('<div class="card">', unsafe_allow_html=True)
+st.markdown('<div class="section-title">➕ Stwórz nowy wyścig komentatorski</div>', unsafe_allow_html=True)
+with st.expander("Kliknij tutaj, aby dodać nowy radiowy wyścig"):
+    nazwa_nowego = st.text_input("Nazwa wyścigu:", placeholder="np. Wyścig Dookoła Tatr")
+    dystans_nowego = st.text_input("Dystans etapu:", placeholder="np. 85 km")
+    teren_nowego = st.text_input("Ukształtowanie terenu:", placeholder="np. Ciężkie podjazdy, szosa")
+    
+    if st.button("Zapisz i utwórz wyścig"):
+        if nazwa_nowego.strip():
+            klucz = f"🚴 {nazwa_nowego}"
+            st.session_state.dynamic_races[klucz] = {
+                "available": True,
+                "description": "Transmisja radiowa live • Własny wyścig",
+                "distance": dystans_nowego if dystans_nowego else "—",
+                "terrain": teren_nowego if teren_nowego else "—",
+                "is_custom": True,
+                "kolarze": [],
+                "relacja_live": []
+            }
+            st.success(f"Dodano wyścig: {klucz}!")
+            st.rerun()
+        else:
+            st.error("Wpisz nazwę wyścigu!")
+st.markdown("</div>", unsafe_allow_html=True)
+# ============================================================
 # WYBÓR WYŚCIGU
 # ============================================================
 
 st.markdown('<div class="card">', unsafe_allow_html=True)
-
-st.markdown(
-    '<div class="section-title">Wybierz etap</div>',
-    unsafe_allow_html=True,
-)
+st.markdown('<div class="section-title">Wybierz etap</div>', unsafe_allow_html=True)
 
 selected_race = st.selectbox(
     "Etap",
-    options=list(RACES.keys()),
+    options=list(st.session_state.dynamic_races.keys()),
     label_visibility="collapsed",
 )
 
-race_info = RACES[selected_race]
+race_info = st.session_state.dynamic_races[selected_race]
 
 if race_info["available"]:
     st.markdown(
@@ -426,147 +409,135 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ============================================================
-# PERSONALIZACJA
+# TRYB 1: FABRYCZNY (Z Twoją pełną logiką zakończenia)
 # ============================================================
+if race_info["available"] and not race_info["is_custom"]:
 
-st.markdown('<div class="card">', unsafe_allow_html=True)
+    # PERSONALIZACJA
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Twój zawodnik</div>', unsafe_allow_html=True)
 
-st.markdown(
-    '<div class="section-title">Twój zawodnik</div>',
-    unsafe_allow_html=True,
-)
-
-user_name = st.text_input(
-    "Imię i nazwisko",
-    value="Anonimowy Kolarz",
-    max_chars=60,
-    placeholder="np. Jan Kowalski",
-    label_visibility="collapsed",
-)
-
-st.caption(
-    "Komentator będzie używał tego imienia podczas relacji."
-)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-
-# ============================================================
-# START
-# ============================================================
-
-if not race_info["available"]:
-    st.button(
-        "🔒 ETAP ZABLOKOWANY",
-        disabled=True,
-        use_container_width=True,
+    user_name = st.text_input(
+        "Imię i nazwisko",
+        value="Anonimowy Kolarz",
+        max_chars=60,
+        placeholder="np. Jan Kowalski",
+        label_visibility="collapsed",
     )
-else:
-    if st.button(
-        "🔥 START WYŚCIGU",
-        type="primary",
-        use_container_width=True,
-    ):
-        clean_name = user_name.strip()
+    st.caption("Komentator będzie używał tego imienia podczas relacji.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
+    # PRZYCISK START
+    if st.button("🔥 START WYŚCIGU", type="primary", use_container_width=True):
+        clean_name = user_name.strip()
         if not clean_name:
             clean_name = "Anonimowy Kolarz"
 
         with st.spinner("🎙️ Komentator przygotowuje relację..."):
             personalized_text = generate_commentary(clean_name)
-
             try:
                 audio = generate_audio(personalized_text)
-
                 st.session_state.commentary = personalized_text
                 st.session_state.audio = audio
                 st.session_state.started = True
-
             except Exception as error:
                 st.session_state.commentary = personalized_text
                 st.session_state.audio = None
                 st.session_state.started = True
+                st.warning("Nie udało się wygenerować nagrania audio. Sprawdź połączenie z internetem.")
 
-                st.warning(
-                    "Nie udało się wygenerować nagrania audio. "
-                    "Sprawdź połączenie z internetem."
-                )
+    # EKRAN TRANSMISJI FABRYCZNEJ
+    if st.session_state.started:
+        st.markdown('<div class="status">🔴 RELACJA LIVE • JEDZIEMY!</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">🎙️ Relacja komentatora</div>', unsafe_allow_html=True)
+        
+        safe_commentary = html.escape(st.session_state.commentary).replace("\n", "<br>")
+        st.markdown(f'<div class="commentary">{safe_commentary}</div>', unsafe_allow_html=True)
+        
+        # Twój player HTML5 z natywnym Play/Pause
+        if st.session_state.audio:
+            audio_player(st.session_state.audio)
 
+        st.markdown("</div>", unsafe_allow_html=True)
 
+        # Przydatne podczas testowania MVP.
+        with st.expander("📜 Pokaż pełny tekst relacji"):
+            st.write(st.session_state.commentary)
 # ============================================================
-# EKRAN WYŚCIGU
+# TRYB 2: WŁASNY WYŚCIG (Dynamiczne Studio Komentatorskie Live)
 # ============================================================
+elif race_info["available"] and race_info["is_custom"]:
 
-if st.session_state.started:
-
-    st.markdown(
-        """
-        <div class="status">
-            🔴 RELACJA LIVE • JEDZIEMY!
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
+    # Panel dodawania nowych kolarzy
     st.markdown('<div class="card">', unsafe_allow_html=True)
-
-    st.markdown(
-        '<div class="section-title">🎙️ Relacja komentatora</div>',
-        unsafe_allow_html=True,
-    )
-
-    # Escapowanie tekstu chroni przed przypadkowym wykonaniem
-    # HTML wpisanego przez użytkownika.
-    safe_commentary = html.escape(
-        st.session_state.commentary
-    ).replace("\n", "<br>")
-
-    st.markdown(
-        f"""
-        <div class="commentary">
-            {safe_commentary}
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # HTML5 audio z natywnym Play/Pause
-    if st.session_state.audio:
-        audio_player(st.session_state.audio)
-
+    st.markdown('<div class="section-title">👥 Uczestnicy wyścigu i nowe twarze</div>', unsafe_allow_html=True)
+    c_k1, c_k2 = st.columns()
+    with c_k1:
+        nowy_zawodnik = st.text_input("Dodaj nowego, nieznanego zawodnika:", placeholder="np. Marian Kowal (Team Custom)", label_visibility="collapsed")
+    with c_k2:
+        if st.button("➕ Dodaj", use_container_width=True):
+            if nowy_zawodnik.strip() and nowy_zawodnik not in race_info["kolarze"]:
+                race_info["kolarze"].append(nowy_zawodnik.strip())
+                st.rerun()
+                
+    if race_info["kolarze"]:
+        st.caption("**Lista nowych zawodników w tym wyścigu:** " + ", ".join(race_info["kolarze"]))
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Przydatne podczas testowania MVP.
-    with st.expander("📜 Pokaż pełny tekst relacji"):
-        st.write(st.session_state.commentary)
+    # Panel Mikrofonu Komentatora
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">🎙️ MIKROFON KOMENTATORA LIVE</div>', unsafe_allow_html=True)
+    
+    tekst_komunikatu = st.text_area("Wpisz na bieżąco tekst relacji radiowej:", height=100, placeholder="np. Niewiarygodny moment! Nowy zawodnik ucieka z grupy...")
+    
+    if st.button("🔊 WYŚLIJ KOMUNIKAT NA ANTENĘ", type="primary", use_container_width=True):
+        if tekst_komunikatu.strip():
+            race_info["relacja_live"].insert(0, tekst_komunikatu.strip())
+            try:
+                st.session_state.custom_audio = generate_audio(tekst_komunikatu.strip())
+            except:
+                st.session_state.custom_audio = None
+                st.warning("Błąd sieci gTTS przy generowaniu audio.")
+            st.rerun()
+
+    if st.session_state.custom_audio:
+        st.markdown('**Ostatnie nagranie audio:**')
+        audio_player(st.session_state.custom_audio)
+
+    # Kronika wydarzeń
+    st.markdown('<div class="section-title" style="margin-top: 1.5rem;">📜 KRONIKA WYDARZEŃ (Od najnowszych)</div>', unsafe_allow_html=True)
+    if race_info["relacja_live"]:
+        historia_html = "<br><br>".join([f"• {html.escape(wpis)}" for wpis in race_info["relacja_live"]])
+        st.markdown(f'<div class="commentary">{historia_html}</div>', unsafe_allow_html=True)
+    else:
+        st.caption("Cisza w eterze. Napisz swój pierwszy komunikat wyżej!")
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ============================================================
-# INFORMACJE / INSTRUKCJA
+# INFORMACJE / INSTRUKCJA (Twoja sekcja końcowa)
 # ============================================================
 
 st.markdown('<div class="card">', unsafe_allow_html=True)
-
 st.markdown(
     """
     <div class="section-title">🎧 Jak korzystać?</div>
-
     <p style="color:#aab1bd; line-height:1.7;">
         1. Załóż słuchawki.<br>
-        2. Wpisz swoje imię i nazwisko.<br>
+        2. Wpisz swoje imię i nazwisko (lub twórz własne wyścigi).<br>
         3. Wybierz dostępny etap.<br>
-        4. Naciśnij <b>START WYŚCIGU</b>.<br>
+        4. Naciśnij <b>START WYŚCIGU</b> ut nadawaj komunikaty live.<br>
         5. Uruchom relację i ruszaj!
     </p>
     """,
     unsafe_allow_html=True,
 )
-
 st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ============================================================
-# STOPKA
+# STOPKA (Twoja autorska stopka MVP)
 # ============================================================
 
 st.markdown(
@@ -578,4 +549,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-```
