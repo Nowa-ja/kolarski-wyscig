@@ -1,8 +1,9 @@
 import base64
 import io
 import html
+import asyncio
 import streamlit as st
-from gtts import gTTS
+import edge_tts
 
 # ============================================================
 # KONFIGURACJA APLIKACJI
@@ -16,7 +17,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# STYL UI (Zachowany Twój styl + poprawki dla kategorii)
+# STYL UI (Ciemny motyw dla smartfonów)
 # ============================================================
 
 st.markdown(
@@ -53,7 +54,36 @@ st.markdown(
 )
 
 # ============================================================
-# NOWA STRUKTURA BAZY WYŚCIGÓW (Z podziałem na Twoje kategorie!)
+# NOWY ASYNCHRONICZNY GENERATOR AUDIO (Edge-TTS)
+# Głos: pl-PL-MarekNeural, Tempo podkręcone o +25% dla dynamiki sportowej!
+# ============================================================
+
+async def amake_audio(text: str) -> bytes:
+    # Używamy głosu Marka z przyśpieszeniem +25%
+    communicate = edge_tts.Communicate(text, "pl-PL-MarekNeural", rate="+25%")
+    audio_buffer = io.BytesIO()
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio_buffer.write(chunk["data"])
+    audio_buffer.seek(0)
+    return audio_buffer.read()
+
+def generate_audio(text: str) -> bytes:
+    # Mostek łączący kod asynchroniczny ze Streamlit
+    return asyncio.run(amake_audio(text))
+
+def audio_player(audio_bytes: bytes):
+    audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+    player = f"""
+        <audio controls preload="metadata" style="width: 100%; margin-top: 10px; border-radius: 12px;">
+            <source src="data:audio/mpeg;base64,{audio_base64}" type="audio/mpeg">
+            Twoja przeglądarka nie obsługuje elementu audio.
+        </audio>
+    """
+    st.markdown(player, unsafe_allow_html=True)
+# ============================================================
+# INITIALIZATION / SESSION STATE
+# Baza wyścigów z kategoriami oraz systemem kodów dostępu BLIK
 # ============================================================
 
 if "dynamic_races" not in st.session_state:
@@ -94,6 +124,8 @@ if "audio" not in st.session_state:
     st.session_state.audio = None
 if "custom_audio" not in st.session_state:
     st.session_state.custom_audio = None
+
+
 # ============================================================
 # KOMENTARZ WYŚCIGU (Twój oryginalny szablon)
 # ============================================================
@@ -125,7 +157,7 @@ zorganizować kontratak.
 
 Ale {USER_NAME} nie zwalnia!
 
-Szczyt podjazdu jest już blisko!
+Szczyt podjazdu is już blisko!
 
 Jeszcze pięćdziesiąt metrów...
 czterdzieści...
@@ -167,30 +199,8 @@ Co za emocje!
 Cała Polska wstrzymała oddech!
 """
 
-# ============================================================
-# FUNKCJE
-# ============================================================
-
 def generate_commentary(user_name: str) -> str:
     return COMMENTARY_TEMPLATE.replace("{USER_NAME}", user_name)
-
-@st.cache_data(show_spinner=False)
-def generate_audio(text: str) -> bytes:
-    audio_buffer = io.BytesIO()
-    tts = gTTS(text=text, lang="pl", slow=False)
-    tts.write_to_fp(audio_buffer)
-    audio_buffer.seek(0)
-    return audio_buffer.read()
-
-def audio_player(audio_bytes: bytes):
-    audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
-    player = f"""
-        <audio controls preload="metadata" style="width: 100%; margin-top: 10px; border-radius: 12px;">
-            <source src="data:audio/mpeg;base64,{audio_base64}" type="audio/mpeg">
-            Twoja przeglądarka nie obsługuje elementu audio.
-        </audio>
-    """
-    st.markdown(player, unsafe_allow_html=True)
 
 
 # ============================================================
@@ -231,7 +241,7 @@ selected_race = st.selectbox(
 
 race_info = races_in_cat[selected_race]
 
-# TUTAJ BYŁ BŁĄD - Nawiasy zostały teraz poprawnie zamknięte:
+# Wyświetlenie karty trasy
 st.markdown(
     f"""
     <div class="route-card">
@@ -259,7 +269,6 @@ if not race_info["available"]:
             st.error("Nieprawidłowy kod dostępu. Spróbuj ponownie lub skontaktuj się z organizatorem.")
 
 st.markdown("</div>", unsafe_allow_html=True)
-
 # ============================================================
 # LOGIKA URUCHAMIANIA TRANSMISJI (Tylko dla odblokowanych)
 # ============================================================
@@ -285,10 +294,10 @@ if race_info["available"]:
         if not clean_name:
             clean_name = "Anonimowy Kolarz"
 
-        with st.spinner("🎙️ Komentator przygotowuje relację..."):
-            # Generowanie komentarza dostosowanego pod zawodnika
+        with st.spinner("🎙️ Dynamiczny komentator przygotowuje relację..."):
             personalized_text = generate_commentary(clean_name)
             try:
+                # Uruchomienie nowego, podkręconego silnika Edge-TTS
                 audio = generate_audio(personalized_text)
                 st.session_state.commentary = personalized_text
                 st.session_state.audio = audio
@@ -297,18 +306,18 @@ if race_info["available"]:
                 st.session_state.commentary = personalized_text
                 st.session_state.audio = None
                 st.session_state.started = True
-                st.warning("Nie udało się wygenerować nagrania audio. Sprawdź połączenie z internetem.")
+                st.warning("Nie udało się wygenerować nagrania audio przez Edge-TTS. Sprawdź połączenie z internetem.")
 
     # EKRAN AKTYWNEJ RELACJI LIVE
     if st.session_state.started and st.session_state.commentary:
-        st.markdown('<div class="status">🔴 RELACJA LIVE • JEDZIEMY!</div>', unsafe_allow_html=True)
+        st.markdown('<div class="status">🔴 TRANSMISJA AUDIO LIVE • EMOCJE DO KOŃCA!</div>', unsafe_allow_html=True)
         st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">🎙️ Relacja komentatora</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">🎙️ Relacja dynamicznego komentatora</div>', unsafe_allow_html=True)
         
         safe_commentary = html.escape(st.session_state.commentary).replace("\n", "<br>")
         st.markdown(f'<div class="commentary">{safe_commentary}</div>', unsafe_allow_html=True)
         
-        # Odtwarzacz HTML5 z przyciskami Play/Pause
+        # Odtwarzacz HTML5 z nowym, szybkim głosem Marka (+25% tempa)
         if st.session_state.audio:
             audio_player(st.session_state.audio)
 
@@ -319,7 +328,7 @@ if race_info["available"]:
             st.write(st.session_state.commentary)
 
 else:
-    # Blokada przycisku startu, gdy użytkownik nie wpisał poprawnego hasła BLIK
+    # Blokada przycisku startu dla zablokowanych etapów Premium
     st.button("🔒 ETAP ZABLOKOWANY (WYMAGANA LICENCJA)", disabled=True, use_container_width=True)
 
 
@@ -351,7 +360,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 st.markdown(
     """
     <div class="footer">
-        PELOTON LIVE • PREMIUM MVP<br>
+        PELOTON LIVE • DYNAMIC PREMIUM MVP<br>
         Fikcyjny wyścig sportowy • Projekt demonstracyjny komercyjny
     </div>
     """,
