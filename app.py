@@ -297,7 +297,7 @@ if race_info["available"]:
             if not clean_name:
                 clean_name = "Anonimowy Kolarz"
 
-            with st.spinner("🎙️ Dynamiczny komentator przygotowuje relację..."):
+            with st.spinner("🚴‍♂️ Trwa przygotowywanie Twojego wyścigu. Zapnij kask i łap za kierownicę – zaraz idzie ogień z korby! Bylebyś tylko nie wypadł z trasy! 🔥"):
                 personalized_text = generate_commentary(clean_name)
                 try:
                     audio = generate_audio(personalized_text)
@@ -308,7 +308,7 @@ if race_info["available"]:
                     st.session_state.commentary = personalized_text
                     st.session_state.audio = None
                     st.session_state.started = True
-                    st.warning("Błąd generowania audio przez Edge-TTS.")
+                    st.error("⚠️ Defekt techniczny! Zerwało nam łączność z wozem technicznym. Spróbuj kliknąć jeszcze raz!")
 
         # EKRAN AKTYWNEJ RELACJI DLA SZABLONU
         if st.session_state.started and st.session_state.commentary:
@@ -340,18 +340,17 @@ if race_info["available"]:
             label_visibility="collapsed"
         )
         
-if st.button("🔊 GENERUJ I ODTWÓRZ WŁASNY TEKST", type="primary", use_container_width=True):
-    if tekst_komunikatu.strip():
-        with st.spinner("🚴‍♂️ Trwa przygotowywanie Twojego wyścigu. Zapnij kask i łap za kierownicę – zaraz idzie ogień z korby! Bylebyś tylko nie wypadł z trasy! 🔥"):
-
+        if st.button("🔊 GENERUJ I ODTWÓRZ WŁASNY TEKST", type="primary", use_container_width=True):
+            if tekst_komunikatu.strip():
+                with st.spinner("🚴‍♂️ Trwa przygotowywanie Twojego wyścigu. Zapnij kask i łap za kierownicę – zaraz idzie ogień z korby! Bylebyś tylko nie wypadł z trasy! 🔥"):
                     try:
                         st.session_state.custom_audio = generate_audio(tekst_komunikatu.strip())
                         st.session_state.commentary = tekst_komunikatu.strip()
                     except:
                         st.session_state.custom_audio = None
-                        st.st.error("Błąd sieci Edge-TTS przy generowaniu audio.")
+                        st.error("⚠️ Defekt techniczny! Zerwało nam łączność z wozem technicznym. Spróbuj kliknąć jeszcze raz!")
             else:
-                st.error("Wpisz lub wklej najpierw jakiś tekst!")
+                st.error("🚫 Pusta trasa? Wpisz najpierw tekst relacji, przecież komentator nie będzie milczał w eterze!")
 
         if st.session_state.custom_audio:
             st.markdown('<div class="status">🔊 TRANSMISJA TWOJEGO TEKSTU LIVE</div>', unsafe_allow_html=True)
@@ -365,7 +364,6 @@ if st.button("🔊 GENERUJ I ODTWÓRZ WŁASNY TEKST", type="primary", use_contai
 else:
     # Blokada przycisku startu dla zablokowanych etapów Premium
     st.button("🔒 ETAP ZABLOKOWANY (WYMAGANA LICENCJA)", disabled=True, use_container_width=True)
-
 
 # ============================================================
 # INFORMACJE / INSTRUKCJA (Twoja sekcja końcowa)
